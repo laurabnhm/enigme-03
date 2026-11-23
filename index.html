@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Énigme de Noël - Le Mystère du Grinch</title>
+    <!-- Importation de Google Fonts pour une typographie festive et une police nette pour la grille -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Inter:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --pine-dark: #0b2e1e;
+            --pine-green: #14452f;
+            --christmas-red: #c41e3a;
+            --christmas-red-bright: #d62828;
+            --gold: #f4c430;
+            --snow-white: #f8fafc;
+            --cell-size: 21px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, #185238 0%, var(--pine-dark) 100%);
+            color: var(--snow-white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+            padding-bottom: 40px;
+        }
+
+        /* Effet de neige subtil en arrière-plan */
+        #snow-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Guirlande lumineuse en haut de page */
+        .garland {
+            width: 100%;
+            height: 28px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.25);
+            border-bottom: 2px solid #092216;
+            z-index: 10;
+            padding: 0 10px;
+        }
+
+        .bulb {
+            width: 12px;
+            height: 16px;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: twinkle 2s infinite alternate;
+        }
+
+        .bulb:nth-child(4n+1) { background: #ff3b3b; box-shadow: 0 0 10px #ff3b3b; animation-delay: 0s; }
+        .bulb:nth-child(4n+2) { background: #ffd700; box-shadow: 0 0 10px #ffd700; animation-delay: 0.5s; }
+        .bulb:nth-child(4n+3) { background: #2ecc71; box-shadow: 0 0 10px #2ecc71; animation-delay: 1s; }
+        .bulb:nth-child(4n+4) { background: #3498db; box-shadow: 0 0 10px #3498db; animation-delay: 1.5s; }
+
+        @keyframes twinkle {
+            0% { opacity: 0.45; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* En-tête */
+        header {
+            text-align: center;
+            margin: 20px 15px 15px;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-family: 'Mountains of Christmas', cursive;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            color: var(--gold);
+            text-shadow: 2px 3px 6px rgba(0, 0, 0, 0.6);
+            letter-spacing: 1px;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            color: #d1e8dc;
+            margin-top: 4px;
+        }
+
+        /* Conteneur principal : Grinch à gauche/haut + Grille au centre */
+        .main-layout {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 28px;
+            width: 100%;
+            max-width: 1380px;
+            padding: 10px 20px;
+            z-index: 10;
+        }
+
+        /* Section du Grinch et sa bulle BD */
+        .grinch-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 270px;
+            flex-shrink: 0;
+            background: rgba(10, 38, 25, 0.75);
+            border: 2px solid rgba(244, 196, 48, 0.4);
+            border-radius: 20px;
+            padding: 20px 16px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(6px);
+            position: sticky;
+            top: 20px;
+        }
+
+        /* Bulle de bande dessinée */
+        .speech-bubble {
+            position: relative;
+            background: #ffffff;
+            color: #1a1a1a;
+            border-radius: 18px;
+            padding: 16px 18px;
+            font-weight: 700;
+            font-size: 1.08rem;
+            line-height: 1.35;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            border: 3px solid #1e293b;
+            margin-bottom: 22px;
+            animation: floatBubble 3.5s ease-in-out infinite;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 16px 14px 0;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -11px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 13px 11px 0;
+            border-style: solid;
+            border-color: #ffffff transparent transparent transparent;
+            z-index: 1;
+        }
+
+        @keyframes floatBubble {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+        }
+
+        .grinch-svg {
+            width: 190px;
+            height: 210px;
+            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.45));
+        }
+
+        .controls {
+            margin-top: 18px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #b91c1c, #991b1b);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-reset:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-1px);
+        }
+
+        .btn-reset:active {
+            transform: translateY(1px);
+        }
+
+        .tip-text {
+            font-size: 0.78rem;
+            color: #a7c7b7;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        /* Conteneur de la grille 40x40 */
+        .grid-wrapper {
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 14px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.55), 0 0 0 4px var(--gold);
+            max-width: 100%;
+            overflow-x: auto;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .grid-40 {
+            display: grid;
+            grid-template-columns: repeat(40, var(--cell-size));
+            grid-template-rows: repeat(40, var(--cell-size));
+            border-top: 1px solid #cbd5e1;
+            border-left: 1px solid #cbd5e1;
+            background-color: #ffffff;
+            width: max-content;
+        }
+
+        .cell {
+            width: var(--cell-size);
+            height: var(--cell-size);
+            background-color: #ffffff;
+            color: #1e293b;
+            border-right: 1px solid #cbd5e1;
+            border-bottom: 1px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.08s ease, color 0.08s ease;
+        }
+
+        .cell:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* État sélectionné : carré rouge avec chiffre bien lisible */
+        .cell.selected {
+            background-color: var(--christmas-red-bright);
+            color: #ffffff;
+            border-color: #b91c1c;
+        }
+
+        .cell.selected:hover {
+            background-color: #c81e3b;
+        }
+
+        /* Modale de confirmation discrète pour la réinitialisation (pas d'alert/confirm natif) */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #123c29;
+            border: 2px solid var(--gold);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 360px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-box h3 {
+            color: var(--gold);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .modal-box p {
+            font-size: 0.92rem;
+            color: #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .modal-btn.cancel {
+            background: #334155;
+            color: #fff;
+        }
+
+        .modal-btn.confirm {
+            background: var(--christmas-red-bright);
+            color: #fff;
+        }
+
+        /* Adaptation responsive pour écrans plus étroits */
+        @media (max-width: 1220px) {
+            .main-layout {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .grinch-panel {
+                position: static;
+                width: 100%;
+                max-width: 560px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 16px;
+                padding: 16px;
+            }
+
+            .speech-bubble {
+                margin-bottom: 0;
+                max-width: 260px;
+            }
+
+            .speech-bubble::after,
+            .speech-bubble::before {
+                display: none;
+            }
+
+            .grinch-svg {
+                width: 130px;
+                height: 145px;
+            }
+
+            .controls {
+                margin-top: 0;
+                max-width: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Canevas pour la neige en arrière-plan -->
+    <canvas id="snow-canvas"></canvas>
+
+    <!-- Guirlande lumineuse de Noël -->
+    <div class="garland" id="garland"></div>
+
+    <!-- Titre festif -->
+    <header>
+        <h1>🎄 Énigme n° 3 🎄</h1>
+        <p>Observez bien la grille et écoutez ce que marmonne le Grinch...</p>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="main-layout">
+        <!-- Panneau du Grinch -->
+        <aside class="grinch-panel">
+            <div class="speech-bubble">
+                « J'aime pas quand ça fait quatre ! »
+            </div>
+
+            <!-- Illustration SVG détaillée et expressive du Grinch avec bonnet de Noël -->
+            <svg class="grinch-svg" viewBox="0 0 220 240" xmlns="http://www.w3.org/2000/svg" aria-label="Le Grinch">
+                <!-- Épaules / Fourrure verte du buste -->
+                <path d="M 45 235 C 45 190, 75 178, 110 178 C 145 178, 175 190, 175 235 Z" fill="#6ab023" stroke="#2d5409" stroke-width="3"/>
+                <!-- Col du manteau de Père Noël -->
+                <path d="M 62 182 Q 110 202 158 182 Q 166 196 152 204 Q 110 218 68 204 Q 54 196 62 182 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2.5"/>
+                <path d="M 55 204 L 165 204 L 173 235 L 47 235 Z" fill="#c41e3a" stroke="#7f1d1d" stroke-width="2.5"/>
+
+                <!-- Touffes de poils sur les joues -->
+                <path d="M 56 125 L 40 120 L 52 134 L 38 140 L 55 146" fill="#7ac72b" stroke="#2d5409" stroke-width="2.5" stroke-linejoin="round"/>
+                <path d="M 164 125 L 180 120 L 168 134 L 182 140 L 165 146" fill="#7ac72b" stroke="#2d5409" stroke-width="2.5" stroke-linejoin="round"/>
+
+                <!-- Tête en forme de poire caractéristique du Grinch -->
+                <path d="M 110 52 
+                         C 138 52, 152 76, 154 102 
+                         C 156 120, 170 132, 166 152 
+                         C 162 172, 138 186, 110 186 
+                         C 82 186, 58 172, 54 152 
+                         C 50 132, 64 120, 66 102 
+                         C 68 76, 82 52, 110 52 Z" 
+                      fill="#7ac72b" stroke="#2d5409" stroke-width="3"/>
+
+                <!-- Ombrage subtil du visage -->
+                <path d="M 110 184 C 136 184, 158 171, 162 152 C 164 142, 158 134, 154 126 C 154 156, 134 176, 110 176 Z" fill="#63a81e" opacity="0.5"/>
+
+                <!-- Sourcils broussailleux et froncés -->
+                <path d="M 66 94 Q 88 86 105 104 Q 90 98 68 103 Z" fill="#2d5409"/>
+                <path d="M 154 94 Q 132 86 115 104 Q 130 98 152 103 Z" fill="#2d5409"/>
+                <!-- Poils rebelles sur les sourcils -->
+                <path d="M 72 92 L 66 83 M 82 90 L 79 81 M 148 92 L 154 83 M 138 90 L 141 81" stroke="#2d5409" stroke-width="2.5" stroke-linecap="round"/>
+
+                <!-- Yeux jaunes malicieux -->
+                <ellipse cx="88" cy="112" rx="13" ry="10" fill="#fde047" stroke="#2d5409" stroke-width="2"/>
+                <ellipse cx="132" cy="112" rx="13" ry="10" fill="#fde047" stroke="#2d5409" stroke-width="2"/>
+                <!-- Pupilles rouges/noires -->
+                <circle cx="91" cy="112" r="4.5" fill="#991b1b"/>
+                <circle cx="129" cy="112" r="4.5" fill="#991b1b"/>
+                <circle cx="92.5" cy="110.5" r="1.5" fill="#ffffff"/>
+                <circle cx="130.5" cy="110.5" r="1.5" fill="#ffffff"/>
+
+                <!-- Petit nez retroussé -->
+                <path d="M 103 128 Q 110 122 117 128 Q 113 134 110 134 Q 107 134 103 128 Z" fill="#3a6b0d"/>
+
+                <!-- Sillon nasogénien et sourire narquois en coin -->
+                <path d="M 105 135 L 105 147" stroke="#2d5409" stroke-width="2" stroke-linecap="round"/>
+                <path d="M 72 152 Q 110 174 148 148" fill="none" stroke="#2d5409" stroke-width="3" stroke-linecap="round"/>
+                <!-- Fossettes du sourire -->
+                <path d="M 68 147 Q 73 152 70 158" fill="none" stroke="#2d5409" stroke-width="2.2" stroke-linecap="round"/>
+                <path d="M 152 143 Q 147 148 150 154" fill="none" stroke="#2d5409" stroke-width="2.2" stroke-linecap="round"/>
+
+                <!-- Bonnet de Père Noël posé de travers -->
+                <path d="M 65 76 C 72 30, 128 12, 168 42 C 184 54, 190 74, 186 92 C 175 84, 164 72, 152 68 C 125 60, 90 64, 65 76 Z" fill="#c41e3a" stroke="#7f1d1d" stroke-width="2.5"/>
+                <!-- Bande blanche du bonnet -->
+                <path d="M 58 74 Q 110 56 160 72 Q 164 84 154 88 Q 110 72 62 88 Q 54 84 58 74 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2.5"/>
+                <!-- Pompon blanc -->
+                <circle cx="187" cy="96" r="13" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2.5"/>
+            </svg>
+
+            <div class="controls">
+                <button type="button" class="btn-reset" id="reset-btn">Effacer la grille</button>
+                <p class="tip-text">Astuce : cliquez sur une case ou maintenez le clic en glissant pour colorier plus vite.</p>
+            </div>
+        </aside>
+
+        <!-- Grille interactive 40x40 -->
+        <section class="grid-wrapper" aria-label="Grille d'énigme 40 par 40">
+            <div class="grid-40" id="grid"></div>
+        </section>
+    </main>
+
+    <!-- Modale de confirmation pour réinitialiser -->
+    <div class="modal-overlay" id="reset-modal">
+        <div class="modal-box">
+            <h3>Réinitialiser la grille ?</h3>
+            <p>Toutes les cases rouges redeviendront blanches.</p>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn cancel" id="cancel-reset">Annuler</button>
+                <button type="button" class="modal-btn confirm" id="confirm-reset">Tout effacer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const GRID_SIZE = 40;
+            const gridElement = document.getElementById('grid');
+
+            // Chiffres autorisés pour révéler le pictogramme : 1, 3, 6
+            const TARGET_DIGITS = [1, 3, 6];
+            // Chiffres de fond (tous les autres chiffres de 0 à 9)
+            const BACKGROUND_DIGITS = [0, 2, 4, 5, 7, 8, 9];
+
+            /**
+             * Détermine si la coordonnée (row, col) fait partie du pictogramme
+             * standard des "toilettes des femmes" centré dans la grille 40x40.
+             */
+            function isWomanPictogram(row, col) {
+                const centerX = 19.5; // Centre horizontal exact de 0..39
+
+                // 1. Tête (cercle bien rond en haut, lignes 3 à 9)
+                const headCenterY = 6.2;
+                const headRadius = 3.1;
+                const dxHead = col - centerX;
+                const dyHead = row - headCenterY;
+                if (dxHead * dxHead + dyHead * dyHead <= headRadius * headRadius) {
+                    return true;
+                }
+
+                // 2. Cou / Épaules arrondies (lignes 10 à 12)
+                if (row === 10 && Math.abs(col - centerX) <= 2.2) {
+                    return true;
+                }
+                if (row >= 11 && row <= 12 && Math.abs(col - centerX) <= 6.2) {
+                    return true;
+                }
+
+                // 3. Bras inclinés le long du corps (lignes 13 à 23)
+                if (row >= 13 && row <= 22) {
+                    const armProgress = (row - 12) / 10; // 0 à 1
+                    const armCenterOffset = 5.3 + armProgress * 3.4; // S'écarte légèrement vers le bas
+                    const armHalfThickness = 1.25;
+                    if (Math.abs(Math.abs(col - centerX) - armCenterOffset) <= armHalfThickness) {
+                        return true;
+                    }
+                }
+                // Mains arrondies au bout des bras (ligne 23)
+                if (row === 23 && Math.abs(Math.abs(col - centerX) - 8.7) <= 1.05) {
+                    return true;
+                }
+
+                // 4. Buste (lignes 13 à 17)
+                if (row >= 13 && row <= 17 && Math.abs(col - centerX) <= 3.5) {
+                    return true;
+                }
+
+                // 5. Robe trapézoïdale / triangulaire évasée (lignes 18 à 27)
+                if (row >= 18 && row <= 27) {
+                    const dressProgress = (row - 18) / 9; // 0 à 1
+                    const halfWidth = 3.6 + dressProgress * 4.7; // Passe de 3.6 à 8.3 de demi-largeur
+                    if (Math.abs(col - centerX) <= halfWidth) {
+                        return true;
+                    }
+                }
+
+                // 6. Jambes (lignes 28 à 36)
+                if (row >= 28 && row <= 36) {
+                    const legOffset = 2.3; // Distance du centre pour chaque jambe
+                    const legHalfWidth = 1.35; // Épaisseur de chaque jambe
+                    if (Math.abs(Math.abs(col - centerX) - legOffset) <= legHalfWidth) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * Générateur pseudo-aléatoire déterministe pour que la grille reste
+             * équilibrée et esthétique à chaque chargement.
+             */
+            function seededDigit(row, col, array) {
+                const hash = Math.abs(Math.sin(row * 127.1 + col * 311.7) * 43758.5453);
+                const index = Math.floor((hash - Math.floor(hash)) * array.length);
+                return array[index];
+            }
+
+            // Variables pour gérer le clic et le glisser-déposer (drag)
+            let isMouseDown = false;
+            let paintMode = true; // true = colorier en rouge, false = remettre en blanc
+
+            // Construction de la grille 40x40
+            const fragment = document.createDocumentFragment();
+
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+
+                    const inPictogram = isWomanPictogram(r, c);
+                    const digit = inPictogram
+                        ? seededDigit(r, c, TARGET_DIGITS)
+                        : seededDigit(r, c, BACKGROUND_DIGITS);
+
+                    cell.textContent = digit;
+
+                    // Gestion du clic initial (toggle immédiat)
+                    cell.addEventListener('mousedown', (e) => {
+                        if (e.button !== 0) return; // Uniquement clic gauche
+                        e.preventDefault();
+                        isMouseDown = true;
+                        paintMode = !cell.classList.contains('selected');
+                        cell.classList.toggle('selected', paintMode);
+                    });
+
+                    // Gestion du survol pendant que le bouton de la souris est maintenu
+                    cell.addEventListener('mouseenter', () => {
+                        if (isMouseDown) {
+                            cell.classList.toggle('selected', paintMode);
+                        }
+                    });
+
+                    fragment.appendChild(cell);
+                }
+            }
+
+            gridElement.appendChild(fragment);
+
+            // Relâchement du clic n'importe où sur la fenêtre
+            window.addEventListener('mouseup', () => {
+                isMouseDown = false;
+            });
+
+            // Gestion tactile basique pour mobile/tablette (glisser le doigt)
+            gridElement.addEventListener('touchstart', (e) => {
+                const touch = e.touches[0];
+                const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (target && target.classList.contains('cell')) {
+                    paintMode = !target.classList.contains('selected');
+                    target.classList.toggle('selected', paintMode);
+                }
+            }, { passive: true });
+
+            gridElement.addEventListener('touchmove', (e) => {
+                const touch = e.touches[0];
+                const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (target && target.classList.contains('cell')) {
+                    target.classList.toggle('selected', paintMode);
+                }
+            }, { passive: true });
+
+            // Gestion du bouton de réinitialisation avec modale personnalisée
+            const resetBtn = document.getElementById('reset-btn');
+            const resetModal = document.getElementById('reset-modal');
+            const cancelResetBtn = document.getElementById('cancel-reset');
+            const confirmResetBtn = document.getElementById('confirm-reset');
+
+            resetBtn.addEventListener('click', () => {
+                resetModal.classList.add('active');
+            });
+
+            cancelResetBtn.addEventListener('click', () => {
+                resetModal.classList.remove('active');
+            });
+
+            confirmResetBtn.addEventListener('click', () => {
+                const selectedCells = gridElement.querySelectorAll('.cell.selected');
+                selectedCells.forEach(cell => cell.classList.remove('selected'));
+                resetModal.classList.remove('active');
+            });
+
+            resetModal.addEventListener('click', (e) => {
+                if (e.target === resetModal) {
+                    resetModal.classList.remove('active');
+                }
+            });
+
+            // Création des ampoules de la guirlande de Noël
+            const garland = document.getElementById('garland');
+            const bulbCount = Math.floor(window.innerWidth / 38);
+            for (let i = 0; i < bulbCount; i++) {
+                const bulb = document.createElement('span');
+                bulb.className = 'bulb';
+                garland.appendChild(bulb);
+            }
+
+            // Animation douce de flocons de neige en arrière-plan
+            const canvas = document.getElementById('snow-canvas');
+            const ctx = canvas.getContext('2d');
+            let snowflakes = [];
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            function initSnow() {
+                resizeCanvas();
+                snowflakes = [];
+                const count = 65;
+                for (let i = 0; i < count; i++) {
+                    snowflakes.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        radius: Math.random() * 2.5 + 1,
+                        speedY: Math.random() * 0.8 + 0.3,
+                        speedX: (Math.random() - 0.5) * 0.4,
+                        opacity: Math.random() * 0.5 + 0.2
+                    });
+                }
+            }
+
+            function animateSnow() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                snowflakes.forEach(flake => {
+                    ctx.beginPath();
+                    ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${flake.opacity})`;
+                    ctx.fill();
+
+                    flake.y += flake.speedY;
+                    flake.x += flake.speedX;
+
+                    if (flake.y > canvas.height) {
+                        flake.y = -5;
+                        flake.x = Math.random() * canvas.width;
+                    }
+                    if (flake.x > canvas.width) flake.x = 0;
+                    if (flake.x < 0) flake.x = canvas.width;
+                });
+                requestAnimationFrame(animateSnow);
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            initSnow();
+            animateSnow();
+        })();
+    </script>
+</body>
+</html>
